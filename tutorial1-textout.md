@@ -40,14 +40,11 @@ After comparing all results, I eventually selected **PyMuPDF(fitz)** for perform
 
 ```python
 import fitz
-#replace this path
-#!!! This is what I need to check keyword"with"? context manager?: with open(myfile) as myfile_obj:
-# In this case, no need to close file anymore. once I leave the indented, open function knows I am done.
-doc = fitz.open('test1.pdf')
-page = doc.loadPage(0)
-text = page.getText()
-print(text)
-doc.close
+
+with fitz.open('text4test/paper.pdf') as doc:
+  page = doc.load_page(0)
+  text = page.get_text()
+  print(text)
 ```
 #### Main checkpoints:
 - Footnotes
