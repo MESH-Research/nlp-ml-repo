@@ -79,7 +79,7 @@ import io
 import timeit
 
 def update_progress(progress):
-    bar_length = 50  # Length of the progress bar
+    bar_length = 50
     block = int(round(bar_length * progress))
     text = "\rProgress: [{0}] {1}%".format("#" * block + "-" * (bar_length - block), round(progress * 100, 2))
     print(text, end='')
@@ -114,11 +114,11 @@ def extract_text_ocr(pdf_path, output_path):
         file.write(text)
 
 def main():
-    pdf_path = 'text4test/paper-img.pdf'
-    output_path = 'paper-img-extext.txt'
+    pdf_path = 'text4test/paper-img.pdf' #replace with your own path
+    output_path = 'paper-img-extext.txt' #or give it another name
     extract_text_ocr(pdf_path, output_path)
 
-# Time the execution of the main function
+# Time the execution of the main function, with my test document, it took 54 seconds. Anticipate it to be long if your scanned document is large.
 execution_time = timeit.timeit('main()', setup='from __main__ import main', number=1)
 print(f"\nExecution time: {execution_time} seconds")
 
@@ -132,4 +132,39 @@ print(f"\nExecution time: {execution_time} seconds")
 ### 2. DOCX
 The "X" in DOCX stands for XML (eXtensible Markup Language), which is used in the file format specification. DOCX files are based on Open XML format and this makes DOCX more efficient, reliable, and reduces the risk of file corruption compared to older binary formats like DOC. *The file tested in this section contains the same content as the one used in section 1/PDF.
 
-There are different libraries, e.g. *docx-simple*, *docx2text*, *python-docx*, *Mammoth*. Just in case in the future whichever lib selected here doesn't fit anymore, feel free to test others.
+There are different libraries, e.g. *docx-simple*, *docx2txt*, *python-docx*, *Mammoth*. Just in case in the future whichever lib selected here doesn't fit anymore, feel free to test others.
+
+*Remember to install packages first, `pip install python-docx`.*
+
+```Python
+import docx
+import timeit
+
+def extract_text_from_docx(docx_file):
+    doc = docx.Document(docx_file)
+    text = ""
+    for paragraph in doc.paragraphs:
+        text += paragraph.text + "\n"
+    return text
+
+if __name__ == "__main__":
+    docx_file = "text4test/paper.docx"  # Replace with your DOCX file's path
+
+    # Measure execution time
+    execution_time = timeit.timeit(
+        stmt=lambda: extract_text_from_docx(docx_file),
+        number=1  # You can change the number of iterations if needed
+    )
+
+    extracted_text = extract_text_from_docx(docx_file)
+
+    print("Extracted Text:") #You don't necessarily need this
+    print(extracted_text)
+
+    print(f"Execution Time: {execution_time:.4f} seconds")
+
+```
+#### Main checkpoints:
+- Footnotes: included
+- Forms/Tables: if the table is in embedded, than it's fine; image won't work
+- Citations: good
