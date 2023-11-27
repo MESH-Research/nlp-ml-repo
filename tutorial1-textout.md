@@ -40,98 +40,96 @@ After comparing all results, I eventually selected **PyMuPDF(fitz)** for perform
 
 ```python
 import fitz
+import timeit
 
-with fitz.open('text4test/paper.pdf') as doc:
-  page = doc.load_page(0)
-  text = page.get_text()
-  print(text)
+# Switch this path to your own file path
+def process_pdf():
+    with fitz.open('text4test/paper.pdf') as doc:
+        for page_num in range(len(doc)):
+            page = doc.load_page(page_num)
+            print(page.get_text())
+
+# People do multiple times and then find average. I just use 1.
+number_of_executions = 1
+
+# Use timeit to measure the execution time
+execution_time = timeit.timeit('process_pdf()', setup='from __main__ import process_pdf', number=number_of_executions)
+
+print(f"Execution time: {execution_time} seconds")
 ```
+
 #### Main checkpoints:
-- Footnotes
-- Forms/Tables (two types: normal table and visualizations)
-- Citations
+- Footnotes: included
+- Forms/Tables: if the table is in embedded, than it's fine; image won't work
+- Citations: good
 
 #### 1.2 For Image-based PDF: PyTesseract
 This process involves two steps: OCR & parse text from OCR results. So we will start with a PDF processing library, such as **PyMuPDF(fitz)**. Then we will use **PyTesseract** because the Tesseract community is well-maintained.
 
-*Remember to install packages first, `pip install tesseract-ocr`.*
+There are different ways to approach this process. Here I provide code that does the following things: 1. OCR progress normally takes longer, in case user wasn't sure what is going on, you can get a better sense with the **progress bar**; 2. In case certain pages do not work, there is an **error warning message**. You will see "An error occured on page X"; 3. **Page Indicator** There is a line saying "--- End of Page X ---" to help identify potential issues; 4. Terminal will only show partial text if the file is large (e.g testing file is 11.5M). It's better to have an **output file**, named 'paper-img-extext.txt'. 5. Time calculation
 
-Here I provide two scripts: the first one is more efficient as it process images in memory; the second one create images and then deletes them. If the file is relatively straightforward and clean, take the first approach. If the file is very complex and requires potentially handle error later on, use the second method.
 
- **Method I**
-
+*Remember to install packages first, `pip install PyMuPDF Pytesseract Pillow`.*
 
 ```python
-import fitz  # PyMuPDF
+import fitz
 import pytesseract
 from PIL import Image
 import io
+import timeit
 
-# Define the path to your PDF file, please replace this with your own
-pdf_path = '/home/tippy/Downloads/Paper4test-type2.pdf'
+def update_progress(progress):
+    bar_length = 50  # Length of the progress bar
+    block = int(round(bar_length * progress))
+    text = "\rProgress: [{0}] {1}%".format("#" * block + "-" * (bar_length - block), round(progress * 100, 2))
+    print(text, end='')
 
-# Open the PDF file
-doc = fitz.open(pdf_path)
-
-# Iterate over each page
-for page_number in range(len(doc)):
-    page = doc.load_page(page_number)  # Load the current page
-    pix = page.get_pixmap()  # Render page to an image (pixmap)
-
-    # Convert the pixmap to a PIL Image
-    img = Image.open(io.BytesIO(pix.tobytes()))
-
-    # Perform OCR using Pytesseract
-    text = pytesseract.image_to_string(img)
-
-    # Print or process the extracted text
-    print(f"Text from page {page_number + 1}:\n{text}\n")
-
-# Close the document
-doc.close()
-```
-
-**Method II**
-
-```python
-import fitz  # PyMuPDF
-import pytesseract
-from PIL import Image
-
-def extract_text_from_pdf(pdf_path):
-    pdf_document = fitz.open(pdf_path)
-
+def extract_text_ocr(pdf_path, output_path):
     text = ''
-    for page_num in range(pdf_document.page_count):
-        page = pdf_document.load_page(page_num)
-        pix = page.get_pixmap()
-        image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
 
-        # Save the image to disk temporarily
-        image_file = f"page_{page_num + 1}.png"
-        image.save(image_file)
+    with fitz.open(pdf_path) as doc:
+        total_pages = len(doc)
+        for page_num in range(total_pages):
+            page = doc.load_page(page_num)
+            image_list = page.get_images(full=True)
+            total_images = len(image_list)
 
-        # Perform OCR and append extracted text
-        extracted_text = pytesseract.image_to_string(image)
-        text += extracted_text
+            for image_index, img in enumerate(image_list):
+                try:
+                    xref = img[0]
+                    base_image = doc.extract_image(xref)
+                    image_bytes = base_image["image"]
+                    image = Image.open(io.BytesIO(image_bytes))
+                    text += pytesseract.image_to_string(image)
+                except Exception as e:
+                    print(f"\nAn error occurred on page {page_num + 1}, image {image_index + 1}: {e}")
 
-        # Remove the generated image file after extraction
-        import os
-        os.remove(image_file)
+                # Update progress bar
+                current_progress = ((page_num * total_images + image_index + 1) / (total_pages * total_images))
+                update_progress(current_progress)
 
-    pdf_document.close()
-    return text
+            text += f"\n----- End of Page {page_num + 1} -----\n"
 
-if __name__ == "__main__":
-     pdf_path = '/home/tippy/Downloads/Paper4test-type2.pdf'  # Replace with your file path
-     extracted_text = extract_text_from_pdf(pdf_path)
-     print(extracted_text)
+    with open(output_path, "w", encoding="utf-8") as file:
+        file.write(text)
+
+def main():
+    pdf_path = 'text4test/paper-img.pdf'
+    output_path = 'paper-img-extext.txt'
+    extract_text_ocr(pdf_path, output_path)
+
+# Time the execution of the main function
+execution_time = timeit.timeit('main()', setup='from __main__ import main', number=1)
+print(f"\nExecution time: {execution_time} seconds")
+
 ```
 
 #### Main checkpoints:
-- Footnotes
-- Forms/Tables (two types: normal table and visualizations)
-- Citations
+- Footnotes: works
+- Forms/Tables: tables will lose its form but the textual information can be extracted
+- Citations: works
 
 ### 2. DOCX
-The "X" in DOCX stands for XML (eXtensible Markup Language), which is used in the file format specification. DOCX files are based on Open XML format and this makes DOCX more efficient, reliable, and reduces the risk of file corruption compared to older binary formats like DOC.
+The "X" in DOCX stands for XML (eXtensible Markup Language), which is used in the file format specification. DOCX files are based on Open XML format and this makes DOCX more efficient, reliable, and reduces the risk of file corruption compared to older binary formats like DOC. *The file tested in this section contains the same content as the one used in section 1/PDF.
+
+There are different libraries, e.g. *docx-simple*, *docx2text*, *python-docx*, *Mammoth*. Just in case in the future whichever lib selected here doesn't fit anymore, feel free to test others.
