@@ -8,7 +8,7 @@ With the variety types of files hosted on Invenio, it is essential to come up wi
 The normal types of files we consider include (Top4-current focus):
 - PDF
 - DOCX
-- PPT
+- PPTX
 - CSV
 - EPUB
 - RTF
