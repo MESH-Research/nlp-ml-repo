@@ -243,3 +243,69 @@ print(f"Execution time: {execution_time} seconds")
 - Citations: good
 
 ### 3. PPTX
+.pptx files are often used for conference talks and contain a mix of text, images, captions, speaker notes, and references.
+
+*Remember to install packages first, `pip install python-pptx tersseract`.*
+
+```python
+from pptx import Presentation
+import timeit
+import io
+from PIL import Image
+import pytesseract
+
+def extract_content_from_pptx(pptx_file):
+    prs = Presentation(pptx_file)
+    extracted_content = []
+    image_texts = []
+
+    for slide in prs.slides:
+        # Extracting text from each shape
+        for shape in slide.shapes:
+            if shape.has_text_frame:
+                for paragraph in shape.text_frame.paragraphs:
+                    extracted_content.append(paragraph.text.strip())
+            elif shape.shape_type == 13:  # Shape type 13 corresponds to a picture
+                image = shape.image
+                image_bytes = io.BytesIO(image.blob)
+                image_text = pytesseract.image_to_string(Image.open(image_bytes))
+                image_texts.append(image_text.strip())
+
+            # Extracting text from tables
+            if shape.shape_type == 19:  # Shape type 19 corresponds to a table
+                for row in shape.table.rows:
+                    for cell in row.cells:
+                        extracted_content.append(cell.text.strip())
+
+        # Extracting speaker notes
+        if slide.has_notes_slide:
+            notes_slide = slide.notes_slide
+            if notes_slide.notes_text_frame:
+                for paragraph in notes_slide.notes_text_frame.paragraphs:
+                    extracted_content.append(paragraph.text.strip())
+
+    return '\n'.join(extracted_content), '\n'.join(image_texts)
+
+# You can add your file path
+pptx_file = 'text4test/talk.pptx'
+
+# Measure execution time
+execution_time = timeit.timeit(lambda: extract_content_from_pptx(pptx_file), number=1)
+
+# Extract and print content
+extracted_content, image_texts = extract_content_from_pptx(pptx_file)
+
+print("\nExtracted Content:") # This might not be needed
+print(extracted_content)
+print("\nText from Images:") # This might not be needed
+print(image_texts)
+print(f"Execution time: {execution_time} seconds")
+# Using my test file, around 8-9s.
+```
+
+#### Main checkpoints:
+- Speakers note: Yes! In this code all speakers note are listed under content. You can also manipulate them to be listed seperately.
+- Images: All images are processed by PyTesseract.
+- Tables: Textual information from tables are extracted sucessfully.
+- Special characters: Captured. Math equations, captured. Equations on images might be unclear.
+- References (last page): Clear, good.
