@@ -31,8 +31,6 @@ There are two types of PDF files we encounter in our usage:
 
 For **Text-Based PDF**, there are different libraries, e.g. *PyPDF2* (simple), *PDFMiner* (deep learning curve), *PyMuPDF(fitz)*, *Textract*. Just in case in the future whichever lib selected here doesn't fit anymore, feel free to test others.
 
-For **Image-Based PDF**, there are different libraries: e.g.
-
 #### 1.1 For Text-based PDF: PyMuPDF
 After comparing all results, I eventually selected **PyMuPDF(fitz)** for performance and versatility.
 
@@ -66,7 +64,7 @@ print(f"Execution time: {execution_time} seconds")
 #### 1.2 For Image-based PDF: PyTesseract
 This process involves two steps: OCR & parse text from OCR results. So we will start with a PDF processing library, such as **PyMuPDF(fitz)**. Then we will use **PyTesseract** because the Tesseract community is well-maintained.
 
-There are different ways to approach this process. Here I provide code that does the following things: 1. OCR progress normally takes longer, in case user wasn't sure what is going on, you can get a better sense with the **progress bar**; 2. In case certain pages do not work, there is an **error warning message**. You will see "An error occured on page X"; 3. **Page Indicator** There is a line saying "--- End of Page X ---" to help identify potential issues; 4. Terminal will only show partial text if the file is large (e.g testing file is 11.5M). It's better to have an **output file**, named 'paper-img-extext.txt'. 5. Time calculation
+There are different ways to approach this process. Here I provide code that does the following things: 1. OCR progress normally takes longer, in case user wasn't sure what is going on, you can get a better sense with the **progress bar**; 2. In case certain pages do not work, there is an **error warning message**. You will see "An error occured on page X"; 3. **Page Indicator** There is a line saying "--- End of Page X ---" to help identify potential issues; 4. Terminal will only show partial text if the file is large (e.g testing file is 11.5M). It's better to have an **output file**, named 'pdf-img-extext.txt'. 5. Time calculation
 
 
 *Remember to install packages first, `pip install PyMuPDF Pytesseract Pillow`.*
@@ -115,7 +113,7 @@ def extract_text_ocr(pdf_path, output_path):
 
 def main():
     pdf_path = 'text4test/paper-img.pdf' #replace with your own path
-    output_path = 'paper-img-extext.txt' #or give it another name
+    output_path = 'pdf-img-extext.txt' #or give it another name
     extract_text_ocr(pdf_path, output_path)
 
 # Time the execution of the main function, with my test document, it took 54 seconds. Anticipate it to be long if your scanned document is large.
@@ -134,6 +132,7 @@ The "X" in DOCX stands for XML (eXtensible Markup Language), which is used in th
 
 There are different libraries, e.g. *docx-simple*, *docx2txt*, *python-docx*, *Mammoth*. Just in case in the future whichever lib selected here doesn't fit anymore, feel free to test others.
 
+#### 2.1 Python-docx Library
 *Remember to install packages first, `pip install python-docx`.*
 
 ```Python
@@ -165,6 +164,82 @@ if __name__ == "__main__":
 
 ```
 #### Main checkpoints:
-- Footnotes: included
+- Footnotes: not included
 - Forms/Tables: if the table is in embedded, than it's fine; image won't work
 - Citations: good
+
+#### 2.2 Docx2txt Library
+*Remember to install packages first, `pip install docx2txt`.*
+
+```Python
+#this library also doesn't show any footnotes, but it can read images that has texts, which is a surprise.
+
+import docx2txt
+import timeit
+
+def extract_text_from_docx(docx_file):
+    text = docx2txt.process(docx_file)
+    return text
+
+if __name__ == "__main__":
+    docx_file = "text4test/paper.docx"  # Replace with your DOCX file's path
+    output_file = "docx-extext.txt"  # Replace with the desired output file path
+
+    # Measure execution time
+    execution_time = timeit.timeit(stmt=lambda: extract_text_from_docx(docx_file),number=1)
+
+    extracted_text = extract_text_from_docx(docx_file)
+
+    # Save extracted text to the output file
+    with open(output_file, "w", encoding="utf-8") as output:
+        output.write(extracted_text)
+
+    print("Extracted Text:")
+    print(extracted_text)
+
+    print(f"Execution Time: {execution_time:.4f} seconds")
+    print(f"Extracted text saved to {output_file}")
+```
+#### Main checkpoints:
+- Footnotes: still not included
+- Forms/Tables: if the table is in embedded, than it's fine; Magically! Image can be read without writing new codes!!!
+- Citations: good
+
+#### 2.3 Mammoth library
+The Mammoth library is designed to convert .docx into HTML or plain text while perserving some of the formatting.
+
+*Remember to install packages first, `pip install mammoth beautifulsoup4`.*
+
+```Python
+import mammoth
+from bs4 import BeautifulSoup
+import timeit
+
+# Function to extract text from .docx file
+def extract_text(docx_file):
+    with open(docx_file, "rb") as docx:
+        result = mammoth.convert_to_html(docx)
+        html_content = result.value  # The extracted HTML
+        messages = result.messages #Whatever messages might occur during this process, you can later print(messages) to double check
+
+    soup = BeautifulSoup(html_content, "html.parser") #use bs to parse HTML content
+    text = soup.get_text(separator='\n', strip=True) #stripping extra whitespace
+    return text
+
+# You can switch this to your file path
+docx_file = "text4test/paper.docx"
+
+# Timing the execution of the extract_text function
+execution_time = timeit.timeit(lambda: extract_text(docx_file), number=1)
+
+print("\nExtracted Text:")
+print(extract_text(docx_file))
+print(f"Execution time: {execution_time} seconds")
+```
+
+#### Main checkpoints:
+- Footnotes: Finally included!
+- Forms/Tables: if the table has embdded text, then the text will be extracted; if the table/other visualization is image, then it will be ignored.
+- Citations: good
+
+### 3. PPTX
