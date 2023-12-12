@@ -239,7 +239,7 @@ print(f"Execution time: {execution_time} seconds")
 
 #### Main checkpoints:
 - Footnotes: Finally included!
-- Forms/Tables: if the table has embdded text, then the text will be extracted; if the table/other visualization is image, then it will be ignored.
+- Forms/Tables: if the table has embedded text, then the text will be extracted; if the table/other visualization is image, then it will be ignored.
 - Citations: good
 
 ### 3. PPTX
@@ -309,3 +309,47 @@ print(f"Execution time: {execution_time} seconds")
 - Tables: Textual information from tables are extracted sucessfully.
 - Special characters: Captured. Math equations, captured. Equations on images might be unclear.
 - References (last page): Clear, good.
+
+### 4. EPUB
+EPUB is an e-book file format that uses the ".epub" file extension. The term is short for electronic publication and is sometimes styled ePub.
+
+There are two commonly used libraries, e.g. *epub2txt*, *EbookLib*. Here I am using *EbookLib* because it can process both text and images.
+
+*Remember to install packages first, `pip install ebooklib beautifulsoup4`.*
+
+```Python
+import ebooklib
+from ebooklib import epub
+from bs4 import BeautifulSoup
+
+def extracted_text_epub(file_path):
+  book = epub.read_epub(file_path)
+  test=''
+
+  for item in book.get_items():
+    if item.get_type() == ebooklib.ITEM_DOCUMENT:
+      soup= BeautifulSoup(item.content,'html.praser')
+      text+=soup.get_text()+'\n'
+
+  return text
+
+file_path = 'Paper4test 1.epub'
+extracted_text = extracted_text_epub(file_path)
+print(extracted_text)
+```
+#### Main checkpoints:
+- Footnotes: Included and clear
+- Forms/Tables: if the table has embedded text, then the text will be extracted; if the table/other visualization is image, then it will be ignored.
+- Citations: clear and good
+
+### 5. RTF
+RTF stands for Rich Text Format. This file format allows you to exchange text files between different word processors in different operating systems.
+
+There are two commonly used libraries, e.g. *Pyth RTF*, *striprtf*. However, I encountered problems trying both libraries. The attempt of converting .rtf to .xml and then extracting also yielded in failure due to lack of maintenance of the package. The way to work around it is to convert RTF to DOCX and then follow the .docx procedures. Install LibreOffice.
+
+
+```console
+libreoffice --convert-to docx Paperfortest1.rtf --headless
+```
+
+### 6. CSV
