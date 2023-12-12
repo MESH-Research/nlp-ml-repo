@@ -333,7 +333,7 @@ def extracted_text_epub(file_path):
 
   return text
 
-file_path = 'Paper4test 1.epub'
+file_path = 'paper.epub'
 extracted_text = extracted_text_epub(file_path)
 print(extracted_text)
 ```
