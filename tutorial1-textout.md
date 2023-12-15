@@ -353,3 +353,29 @@ libreoffice --convert-to docx Paperfortest1.rtf --headless
 ```
 
 ### 6. CSV
+a CSV file is a text file that has a specific format which allows data to be saved in table structured format. CSV stands for comma-separated values.
+
+Notes:
+After testing different .csv files, I believe for best practice, we should treat .csv file seperately. This type of file is generally uploaded as a shared dataset, rather than published paper. (It might be part of a published paper. Including .csv file or not, should be decided based on our research goal.
+
+Here I provide one proper way of handling .csv files using the most standard python library *pandas*
+
+*Remember to install packages first, `pip install pandas`.*
+
+```Python
+import pandas as pd
+
+#mental_health.csv has a very simple data structure; instrument_export.csv has more columns. This comparison is to show each csv file is very different and should be handled with more human judgement.
+
+file_path='text4test/mental_health.csv'
+#or file_path='text4test/instrument_export.csv' or your file
+df = pd.read_csv(file_path)
+print("Column names",df.columns.tolist())
+#here you can see the columns printed out
+columns_to_extract = ['selectedColumn1','selectedColumn2']
+
+textual_data = df[columns_to_extract]
+
+print(textual_data.head())
+#here I only prnted head, but can also save the data into a new file.
+```
