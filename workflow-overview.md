@@ -63,8 +63,8 @@ def download(api_url, auth_token):
     files = response.json()
 
     for file in files:
-        file_url = file['url'] # Adjust the key based on your API response
-        file_name = file['name'] # Adjust the key based on your API response
+        file_url = file['url']
+        file_name = file['name']
 
         # Download the file
         click.echo(f'Downloading {file_name}...')
