@@ -155,7 +155,7 @@ def extract_text_from_pptx(pptx_file_path):
 
 #Useful things
 api_url = "https://invenio-dev.hcommons-staging.org"
-api_key = "a3AEXr9qcGjzGGb9KjIZMNcZSCUCOzZFsIMDMzuwXjbKLHOGTzvuMkQiviP0"
+api_key = "insert api key here"
 api_endpoint = "api/records"
 output_csv = "output.csv"
 download_path = "download_files"
