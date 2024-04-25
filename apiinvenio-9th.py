@@ -270,7 +270,7 @@ def process_files(api_url, endpoint, api_key, output_csv, download_path, investi
 
 #Useful things
 api_url = "https://invenio-dev.hcommons-staging.org"
-api_key = "a3AEXr9qcGjzGGb9KjIZMNcZSCUCOzZFsIMDMzuwXjbKLHOGTzvuMkQiviP0"
+api_key = "my api key"
 api_endpoint = "api/records"
 output_csv = "output9.csv"
 investigation_csv = "investigation9.csv"
