@@ -1,10 +1,7 @@
 ## Examine 'output9.csv' to control output quality
 In the previous step, we successfully created the csv file that contains data extracted from InvenioRDM, named it "output9.csv".
 
-### Steps taken for 'output9.csv'
--  Read csv headers and count rows
-- 'output-9.csv' is being loaded into a dataframe
-
+### Step 1: Read csv headers and count rows
 **Check headers and rows**
 ```python
 import csv
@@ -28,6 +25,8 @@ print("Number of rows:", row_count)
 ```
 Headers: ['Record ID', 'Languages', 'File Name', 'Extracted Text']
 Number of rows: 9487
+
+### Step 2 Further Examination
 
 **View details about this dataframe**
 ```python
@@ -124,7 +123,7 @@ print(df['text_length'].describe())
 
 Overall the csv feels normal to me.
 
-#### Task 1 Missing values the dataframe
+#### Step 2: Task 1 Missing values the dataframe
 From the previous step, we now know that there are null value in the dataframe. Let's take a closer look.
 
 ```python
@@ -196,11 +195,41 @@ print(empty_text)
 
 I found the articles on staging and am not sure why the pdf files can not be read by the function i wrote.
 
-#### Task 2 Duplication
+#### Step 2: Task 2 Duplication
 There are duplicated files in the dataframe. Duplicated files should not affect our goals that much, hence I ignored here.
 
-#### Task 3 Check language accuracy
+#### Step 2: Task 3 Check language accuracy
 This step is not necessary at this point.
+
+### Step 3: Remove all files with null value
+To ensure we move forward with this project, I made the following decisions:
+- ignore all entries with empty values because they can be investigated later
+- keep output9.csv the way it is; create a new csv with clean dataframe for further process and call it "output9clean.csv"
+
+```python
+csv_file_path = '/home/tippy/Documents/stage2/output9.csv'
+df = pd.read_csv(csv_file_path, encoding='utf-8')
+#print("Column names:", df.columns.tolist())
+#remove empty ones
+filtered_df =df[df['Languages'].notna() & df['Extracted Text'].notna()]
+#save it
+filtered_df.to_csv('output9clean.csv', index=False)
+#check the new file
+df_clean = pd.read_csv('output9clean.csv')
+print(df_clean.info())
+```
+
+RangeIndex: 9458 entries, 0 to 9457
+Data columns (total 4 columns):
+| #   | Column          | Non-Null Count | Dtype |
+|-----|-----------------|----------------|-------|
+| 0   | Record ID       | 9458 non-null  | object |
+| 1   | Languages       | 9458 non-null  | object |
+| 2   | File Name       | 9458 non-null  | object |
+| 3   | Extracted Text  | 9458 non-null  | object |
+memory usage: 295.7+ KB
+ 
+Everything adds up. Can move on to the next step.
 
 ### Extra things I should look into later:
 - Can't access more than 10k records using API. Error messages: 2024-03-21 05:52:26,524 - INFO - Completed page 100 HTTP error: 400 Client Error: BAD REQUEST for url: https://invenio-dev.hcommons-staging.org/api/records?size=100&page=101
