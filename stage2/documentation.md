@@ -6,4 +6,4 @@ Follow script 'apiinvenio-9th', you will be able to access, download, convert fi
 - Convert multi formats data into textual data
 
 ### Deliverables
-- csv file with all the data
+- csv file with all the data (Current stored in our One Drive)
