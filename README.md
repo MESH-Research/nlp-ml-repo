@@ -15,5 +15,5 @@ The script for text extraction comparision can be found under "stage1/tutorial1-
   - Machine Learning in Python (https://scikit-learn.org/stable/index.html), potetntially talk to Stephaine Vasko.
 
 ## Stage 2: 2024 Spring/Summer
-In this stage, I have been focusing on accessing and downloading files using api from Invenio, and then extract text data from all downloaded files. These steps can be found in the script "apiinvenio-updated.py".
-The next step is to clean all the extracted text, currently saved in csv, and preparing them for topic modeling.
+In this stage, I have been focusing on accessing and downloading files using api from Invenio, and then extract text data from all downloaded files. These steps can be found in the script "apiinvenio-9th.py" (in folder "stage2").
+The next step is to clean all the extracted text, currently saved in csv, and preparing them for machine learning.
