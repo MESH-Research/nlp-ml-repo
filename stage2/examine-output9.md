@@ -181,10 +181,7 @@ This part confused me a bit: I found the articles on staging and am not sure why
 There are duplicated files in the dataframe. What would be the best approach to deduplicate?
 
 #### Task 3 Check language accuracy
-Is this step really necessary?
-
-#### Task 4 
-
+This step is not necessary at this point.
 
 ### Completed Tasks:
 - rerun the script;
