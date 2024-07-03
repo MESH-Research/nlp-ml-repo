@@ -9,4 +9,4 @@ Follow scripts in foler 'stage2', you will be able to follow how data from Inven
 
 ### Deliverables
 - one csv file with all the clean data (currently stored in our One Drive), 'output9clean.csv' (py script to match this step is 'apiinvenio-9th.py' and some small steps see 'examine-output9.md')
-- one csv file after nlp process using spaCy's library (currently stored in our One Drive), 'processed_output.csv' (py scripts to match this stsep is 'csv-preprocessing1.py'and 'csv-preprocessing2.py')
+- one csv file after nlp process using spaCy's library (currently stored in our One Drive), 'processed_output.csv' (py scripts to match this step is 'csv-preprocessing2.py')
