@@ -1,14 +1,33 @@
-## Notes for this project
-Develop a pipeline for performing NLP tasks in the Invenio RDM for Commons.
+## Examine 'output9.csv' to control output quality
+In the previous step, we successfully created the csv file that contains data extracted from InvenioRDM, named it "output9.csv".
 
-### To-Dos
-- create a script that iterate through but ignore whatever was already processed for future useage;
-- set up dev environment in my local env with Invenio (Docker)
+### Steps taken for 'output9.csv'
+-  Read csv headers and count rows
+- 'output-9.csv' is being loaded into a dataframe
 
-### Initial observations
-- See script 'apiinvenio-9th' for best result when extracting data
-- 'investigation9.csv' contains 515 records that can not be processed with script 'apiinvenio-9th.py'. Details of 'investigation9.csv' will be written and provided
-- Moving forward: 'output-9.csv' is being loaded into a dataframe.
+**Check headers and rows**
+```python
+import csv
+import sys
+
+csv.field_size_limit(sys.maxsize)
+ 
+def read_csv_headers_and_count_rows(file_path):
+    with open(file_path, mode='r', encoding='utf-8', errors='ignore') as file:
+        # Skip any null bytes in the file
+        csv_reader = csv.reader((line.replace('\0', '') for line in file))
+        headers = next(csv_reader)  # Read the header row
+        row_count = sum(1 for _ in csv_reader)  # Count the remaining rows
+ 
+    return headers, row_count
+ 
+file_path = 'output9.csv'
+headers, row_count = read_csv_headers_and_count_rows(file_path)
+print("Headers:", headers)
+print("Number of rows:", row_count)
+```
+Headers: ['Record ID', 'Languages', 'File Name', 'Extracted Text']
+Number of rows: 9487
 
 **View details about this dataframe**
 ```python
@@ -29,7 +48,10 @@ Data columns (total 4 columns):
 | 3   | Extracted Text  | 9473 non-null  | object |
 memory usage: 296.6+ KB
 
-Results: 1. no missing ID entries 2. 9487-9472=15 missing or null for 'languages' 3. 9487-9473=14 missing for 'extracted text'
+Results: 
+1. no missing ID entries
+2. 9487-9472=15 missing or null for 'Languages'
+3. 9487-9473=14 missing for 'Extracted Text'
 
 **Statistical summary**
 ```python
@@ -42,7 +64,7 @@ print(df.describe())
 | File Name      | 9487  | 9412   | document.pdf  | 14   |
 | Extracted Text | 9473  | 9289   | OK Google     | 32   |
 
-Here I might also have to restructure the dataframe based on file type? So I can handle audio files together. The "ok google" might be something happened during the mp3 conversion
+The "ok google" might be something happened during the mp3 conversion.
 
 **Unique values in columns** 
 ```python
@@ -100,8 +122,6 @@ print(df['text_length'].describe())
 | 75%       | 61,245.50   |
 | Max       | 25,884,250  |
 
-The min one only has two characters. Need to check!
-The max one is a bit scary, and might need me to look into it...
 Overall the csv feels normal to me.
 
 #### Task 1 Missing values the dataframe
@@ -141,7 +161,7 @@ print(empty_languages)
 | n88vv-9rx80 | &\n?\n43\n43\nOrgan\nÓ.\nÓ.\n.˙Ó.\nÓ.\nŒ\n˙\n....                 |
 
 Obviously, most of them still have solid content. It's only the language part that's missing.
-Should i investigate why they are missing in the Invenio database? I did.
+So i investigate why they are missing in the Invenio database:
 
 | Record ID   | Reason for missing languages     |
 |-------------|----------------------------------|
@@ -150,7 +170,7 @@ Should i investigate why they are missing in the Invenio database? I did.
 | mbyde-0ph51 | no 'languages' in metadata       |
 | s3p8t-gnz33 | no 'languages' in metadata       |
 
-> Question for Ian: What should we do here? "Languages" is sort of a 'must-have' because in task 3, I might need to write a function to clean the extracted text based on their 'Languages'
+This might not affect our overall goal for the larger picture, so I chose to ignore for now.
 
 ##### 1.2 Empty value under **'Extracted Text'**:
 ```python
@@ -174,19 +194,15 @@ print(empty_text)
 | 7qcc7-zyr12 | eng       | anne_swartz_review_mickalene_thomas.pdf                    | NaN            |
 | 5x6pp-nde27 | heb       | megamot-4.pdf                                              | NaN            |
 
-This part confused me a bit: I found the articles on staging and am not sure why the pdf files can not be read by the function i wrote.
-
+I found the articles on staging and am not sure why the pdf files can not be read by the function i wrote.
 
 #### Task 2 Duplication
-There are duplicated files in the dataframe. What would be the best approach to deduplicate?
+There are duplicated files in the dataframe. Duplicated files should not affect our goals that much, hence I ignored here.
 
 #### Task 3 Check language accuracy
 This step is not necessary at this point.
 
-### Completed Tasks:
-- rerun the script;
-- add tuple for function 'extract-file'
-- test 'textract' lib and decided to not use
-- add things or notes about what other tools use: did not do because I ended up using my own approach
+### Extra things I should look into later:
 - Can't access more than 10k records using API. Error messages: 2024-03-21 05:52:26,524 - INFO - Completed page 100 HTTP error: 400 Client Error: BAD REQUEST for url: https://invenio-dev.hcommons-staging.org/api/records?size=100&page=101
 This has already been addressed and it's a hard limit Invenio set. I will ignore now.
+- 'investigation9.csv' contains 515 records that can not be processed with script 'apiinvenio-9th.py'. Details of 'investigation9.csv' will be written and provided.
