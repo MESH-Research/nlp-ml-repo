@@ -19,21 +19,47 @@ Another goal of this project is to demonstrate that, despite the use of computat
   
 #### Deliverables:
 1. The script for text extraction comparison using different Python libraries on various file types: "stage1/tutorial1-textout.md"
-2. Materials for test purposes are stored in the subfolder "text4test"
+2. Materials for test purposes are stored in the folder "text4test"
 
 *During this process, I also used the Miro Board to guide my steps and drew workflow to explain this process to colleagues.*
 
 ## Stage 2: 2024 Spring
+*You can also find detailed explanation in "guide.md" in folder "stage2"*
+
 ### Step 1: Accessing Data
-In this step, I focused on accessing and downloading files from Invenio API; extracting text data from all downloaded files. Since the downloaded files come in different formats (pdf, word, jpg, mp3, etc.), I developed a strategy to extract text based on various file format.
+Accessing and downloading files from the Invenio API, and extracting text data from all downloaded files. Since the files come in various formats (e.g., PDF, Word, JPG, MP3), I developed a strategy to extract text based on each format. To save local storage space, files that are successfully processed are deleted afterward.
 
-These steps can be found in the script "apiinvenio-9th.py" (in folder "stage2").
+#### Deliverable:
+1. Script "apiinvenio-9th.py"
+2. CSV file "output9clean.csv" (for data security stored elsewhere)
 
-### Step 2: Data Preprocessing
-I clean all the extracted text using natural language processing methods, save them in a csv file, and prepare them for machine learning. During this step, many decisions were made based on 
+### Step 2: Quality Check of Output
+Examine the csv file from the previous step, get a general ideas about what the data structure looks like, checking for missing value, checking files that can not be processed.
+***Invenio set a hardcore limit of 10k, this will be addressed later on.***
+
+#### Deliverable:
+1. Markdown file "stage2/examine-output9.md"
+
+### Step 3: Data Preprocessing
+After comparing NLTK and SpaCy for data preprocessing, I decided to use SpaCy for initial cleaning because it’s lighter, more up-to-date, and has a manageable learning curve. The goal of this step is to produce a clean, processed CSV for future use. Some files contain over 3 million tokens, so I developed strategies to process them in chunks to avoid out-of-memory (OOM) errors.
+
+#### Deliverable:
+1. Script "csv-preprocessing2.py"
+2. CSV file "processed_output.csv" (for data security stored elsewhere)
 
 ## Stage 3: 2024 Summer/Fall
+As I wrapped up with the previous stage, I received a clean and processed CSV file. This stage is mainly about applying vectorization to the preprocessed output so I can further develop applications on this data. Embedding/Vectorization itself is a complicated field and I have done some learning. Notes can be found in deliverables.
 
-### Step 1:
-This stage is built on the csv file created in Stage 2. The 
+### Step 1: Examine the Preprocessed Output & Vectorization Learning
+Always examining and evaluating data acquired from the previous step is a good practice.
+At the same time, I studied embeddings and vectorization from a theoretical level so I understand what happens behind the scene to avoid applying tools to data without comprehension. I have considered to continue work with SpaCy in this stage. However, after learning about SpaCy's functions and limitations, I decided to only use SpaCy in Stage 2 and move on with mBERT vectorization method in Stage 3.
 
+#### Deliverables:
+1. Script "examineprocessed_outputcsv.py"
+2. Markdown file "stage3/learningnotes.md"
+
+### Step 2: Applying Vectorization to Subset & Quality Check
+Vectorization takes a long time to process. To be more sufficient, I created a subset that contains 100 records to test and evaluate.
+
+#### Deliverables:
+1. Script ""
