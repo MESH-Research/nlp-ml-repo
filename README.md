@@ -55,11 +55,11 @@ Always examining and evaluating data acquired from the previous step is a good p
 At the same time, I studied embeddings and vectorization from a theoretical level so I understand what happens behind the scene to avoid applying tools to data without comprehension. I have considered to continue work with SpaCy in this stage. However, after learning about SpaCy's functions and limitations, I decided to only use SpaCy in Stage 2 and move on with mBERT vectorization method in Stage 3.
 
 #### Deliverables:
-1. Script "examineprocessed_outputcsv.py"
+1. Script "stage3/examineprocessed_outputcsv.py"
 2. Markdown file "stage3/learningnotes.md"
 
 ### Step 2: Applying Vectorization to Subset & Quality Check
 Vectorization takes a long time to process. To be more sufficient, I created a subset that contains 100 records to test and evaluate.
 
 #### Deliverables:
-1. Script ""
+1. 
