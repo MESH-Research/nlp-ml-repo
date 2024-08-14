@@ -3,6 +3,9 @@ This document is an extension of "Tutorial 1".
 
 Creator: Tianyi Kou-Herrema; December 2023
 
+*!!! This script was created in 2023 with other plans in mind. As of Summer 2024, I am putting a pause on CLI and focusing on model training.*
+*Ignore this file for now.*
+
 ## Introduction
 After testing all libraries, the next step is to write cli so it can be applied easily by users.
 
