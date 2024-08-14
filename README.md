@@ -62,4 +62,4 @@ At the same time, I studied embeddings and vectorization from a theoretical leve
 Vectorization takes a long time to process. To be more sufficient, I created a subset that contains 100 records to test and evaluate.
 
 #### Deliverables:
-1. 
+1. Script "ml-step1.py"
